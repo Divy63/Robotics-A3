@@ -1,10 +1,17 @@
 package AS3;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.TreeMap;
 
 import org.apache.commons.math3.linear.RealVector;
 
 import jp.vstone.RobotLib.CRobotPose;
+import jp.vstone.RobotLib.CRobotUtil;
 import jp.vstone.RobotLib.CSotaMotion;
 
 public class ServoRangeTool implements Serializable {
@@ -14,24 +21,63 @@ public class ServoRangeTool implements Serializable {
     private Short[] _maxpos = null;
     private Short[] _midpos = null;
 
-    final static String FILENAME = null;
+    final static String FILENAME = "servo_ranges.dat";
+    private TreeMap<Byte, Integer> _IDtoIndex;
+    private Byte[] _servoIDs;
 
-    ServoRangeTool(Byte[] servoIDs) {
+    public ServoRangeTool(Byte[] servoIDs) {
         //todo
+        _servoIDs=servoIDs;
+        _minpos=new Short[servoIDs.length];
+        _maxpos=new Short[servoIDs.length];
+        _midpos=new Short[servoIDs.length];
+        _IDtoIndex=new TreeMap<>();
+
+        // Storing values to tree map and assigning default maximum and minimum values to it
+        for (int i = 0; i < servoIDs.length; i++) {
+            _IDtoIndex.put(servoIDs[i], i);
+            _minpos[i] = Short.MAX_VALUE;
+            _maxpos[i] = Short.MIN_VALUE;
+            _midpos[i] = 0;
+        }
+
     }
 
         
     public void register(CRobotPose pose) {
-        // register(pose.getServoAngles(_servoIDs));
+        register(pose.getServoAngles(_servoIDs));
+
      }
      public void register(Short[] pos) {
          //todo
+         for(Byte id:_IDtoIndex.keySet()){
+            int i=_IDtoIndex.get(id);
+            Short thisPos=pos[i];
+            CRobotUtil.Log("MIN", "Servo ID: " + id + " Position: " + pos[i]);
+
+            // Getting the minimum value of the position
+            if(thisPos<_minpos[i]){
+                
+                _minpos[i]=pos[i];
+            }
+            // Getting the maximum value of the position
+            if(thisPos>_maxpos[i]){
+                _maxpos[i]=pos[i];
+            }
+            // Getting the middle value of the position
+            _midpos[i]=(short)((_minpos[i]+_maxpos[i])/2);
+         }
      }
 
     
     ///==================== Export as CRobotPose objects
     ///====================
     private CRobotPose makePose(Short[] pos) {  // convert short[] to CRobotPose object
+        CRobotPose pose=new CRobotPose();
+        for (Byte servoID : _IDtoIndex.keySet()) {
+            int index = _IDtoIndex.get(servoID);
+            pose.addServoAngle(servoID, pos[index]);
+        }
         return null;
     }
 
@@ -85,11 +131,26 @@ public class ServoRangeTool implements Serializable {
     ///====================
     public static ServoRangeTool Load(){ return ServoRangeTool.Load(FILENAME);}
     public static ServoRangeTool Load(String filename){
-        return null; //TODO
+        // TODO
+        try (ObjectInputStream input=new ObjectInputStream(new FileInputStream(filename))){
+            return (ServoRangeTool)input.readObject();
+            
+        }catch(IOException ioe){
+            ioe.printStackTrace();
+            return null; 
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void save() { save(FILENAME);}
     public void save(String filename) {
         //todo
+        try (ObjectOutputStream output=new ObjectOutputStream(new FileOutputStream(filename))){
+            output.writeObject(this);
+        }catch(IOException ioe){
+            ioe.printStackTrace();
+        }
     }
 }
