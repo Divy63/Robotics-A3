@@ -6,7 +6,7 @@
 
         <!--ip -->
         <!--- CONFIGURE THIS for your Sota -->
-        <property name="scp.server" value="192.168.2.72"/>  
+        <property name="scp.server" value="10.127.50.140"/>  
         <!-- <property name="scp.server" value="10.127.48.104"/>    -->
          
         <!--scp credentials -->

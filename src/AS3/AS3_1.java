@@ -4,9 +4,10 @@ import jp.vstone.RobotLib.CRobotUtil;
 import jp.vstone.RobotLib.CSotaMotion;
 import java.util.*;
 import AS3.ServoRangeTool;
+import org.apache.commons.math3.*;
 
 public class AS3_1 {
-    static final String TAG = "AS3_4";   // set this to support the Sota logging system
+    static final String TAG = "AS3_1";   // set this to support the Sota logging system
 
 	// private variables
 	CRobotPose _sotaPose = new CRobotPose();
@@ -21,31 +22,26 @@ public class AS3_1 {
 	}
 
 	boolean connect() {		
-		if(!_sotaMem.Connect()) { // connect to the robot's subsystem
+		if(!_sotaMem.Connect()) { 
 			CRobotUtil.Log(TAG, "Sota connection failure " + TAG);
 			return false;
 		}
 
 		CRobotUtil.Log(TAG, "connected " + TAG);
-		_sotaMotion.InitRobot_Sota();  // initialize the Sota VSMD			
-		// CRobotUtil.Log(TAG, "Rev. " + _sotaMem.FirmwareRev.get());
+		_sotaMotion.InitRobot_Sota(); 
 		return true;
 	}
 
-	void readMotorPositionLoop() {
+	void readMotorPositionLoop(ServoRangeTool _servoRangeTool) {
 		// Turn servo Motor off
 		_sotaMotion.ServoOff();
-		CRobotUtil.Log(TAG, "Motors turned off. Waiting for system to stabilize...");
-		CRobotUtil.wait(5000);
 		CRobotUtil.Log(TAG, "Tracking motor positions. Press power button to stop.");
 		while(!_sotaMotion.isButton_Power()) {
-					_sotaPose=_sotaMotion.getReadPose();
-					if(_sotaPose==null){
-						CRobotUtil.Log(TAG,"Failed to read pose");
-						continue;
-					}
-					Short[] pos = _sotaPose.getServoAngles(SERVO_IDS);
-					CRobotUtil.Log(TAG, "Motor positions: " + Arrays.toString(pos));
+
+					Short[] pos = _sotaMotion.getReadpos();
+					
+					// CRobotUtil.Log(TAG, "Motor positions: " + Arrays.toString(pos));
+
 					if(pos!=null){
 						_servoRangeTool.register(pos);
 						CRobotUtil.Log(TAG,"Registered Positions");
@@ -54,9 +50,11 @@ public class AS3_1 {
 					}
 
 					CRobotUtil.wait(100);
-					_servoRangeTool.save();
-					CRobotUtil.Log(TAG,"Motor positions data saved.");	
+					
 		}
+		_servoRangeTool.save();
+		_servoRangeTool.printMotorRanges();
+		CRobotUtil.Log(TAG, "Motor positions data saved.");
 	}
     public static void main(String args[]) {
         AS3_1 sota = new AS3_1();
@@ -64,8 +62,7 @@ public class AS3_1 {
             return;
         CRobotUtil.Log(TAG, "Startup Successful");
 		sota._servoRangeTool=new ServoRangeTool(SERVO_IDS);
-		sota.readMotorPositionLoop();
-		sota._servoRangeTool.printMotorRanges();
+		sota.readMotorPositionLoop(sota._servoRangeTool);
         CRobotUtil.Log(TAG, "Program End Reached");
     }
 
