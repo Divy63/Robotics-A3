@@ -84,19 +84,24 @@
                         <param name="jar.name" value="sample4060-motorstateslive.jar" />
                 </antcall>
 
-                 <antcall target="__make_jar">
-                        <param name="jar.class" value="AS3_1" />
-                        <param name="jar.name" value="AS3_1.jar" />
-                </antcall>
+
 
 
                 <!-- assignment JARs -->
                 
                 <antcall target="__make_jar">
-                        <param name="jar.class" value="AS3.AS3_1" />
-                        <param name="jar.name" value="AS3_1.jar" />
                         <param name="jar.class" value="AS3.AS3_5" />
                         <param name="jar.name" value="AS3_5.jar" />
+                </antcall>
+
+                <antcall target="__make_jar">
+                        <param name="jar.class" value="AS3_1" />
+                        <param name="jar.name" value="AS3_1.jar" />
+                </antcall>
+
+                <antcall target="__make_jar">
+                        <param name="jar.class" value="AS3_2" />
+                        <param name="jar.name" value="AS3_2.jar"/>
                 </antcall>
 
 

@@ -126,7 +126,6 @@ public class ServoRangeTool implements Serializable {
     ///====================
     public static ServoRangeTool Load(){ return ServoRangeTool.Load(FILENAME);}
     public static ServoRangeTool Load(String filename){
-        // TODO
         try (ObjectInputStream input=new ObjectInputStream(new FileInputStream(filename))){
             return (ServoRangeTool)input.readObject();
             
