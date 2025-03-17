@@ -83,6 +83,8 @@ public class ServoRangeTool implements Serializable {
     ///==================== Angle <-> motor pos conversions
     ///====================
     public RealVector calcAngles(CRobotPose pose) { // convert pose in motor positions to radians
+        Short[] pos=pose.getServoAngles(_servoIDs);
+        
         return null; // TODO
     }
 
