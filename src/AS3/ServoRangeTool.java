@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.math3.linear.RealVector;
@@ -25,6 +27,8 @@ public class ServoRangeTool implements Serializable {
     private TreeMap<Byte, Integer> _IDtoIndex;
     private Byte[] _servoIDs;
 
+    public Map<Byte, RotLimit> RotationLimits;
+
     public ServoRangeTool(Byte[] servoIDs) {
 
         this._servoIDs=servoIDs;
@@ -40,6 +44,15 @@ public class ServoRangeTool implements Serializable {
             _midpos[i] = 0;
         }
 
+        RotationLimits = Collections.emptyMap();
+        RotationLimits.put(CSotaMotion.SV_BODY_Y,RotLimit.of(-1.077363736, 1.077363736));
+        RotationLimits.put(CSotaMotion.SV_L_SHOULDER, RotLimit.of(-2.617993878,1.745329252));
+        RotationLimits.put(CSotaMotion.SV_L_ELBOW, RotLimit.of(-1.745329252,1.221730476));
+        RotationLimits.put(CSotaMotion.SV_R_SHOULDER, RotLimit.of(-1.745329252,2.617993878));
+        RotationLimits.put(CSotaMotion.SV_R_ELBOW, RotLimit.of(-1.221730476,1.745329252));
+        RotationLimits.put(CSotaMotion.SV_HEAD_Y, RotLimit.of(-2.617993878, 2.617993878)); // todo not 100% sure these are the correct ranges for the head (naming in the urdf is confusing)
+        RotationLimits.put(CSotaMotion.SV_HEAD_P, RotLimit.of(-1.495996502,1.495996502));
+        RotationLimits.put(CSotaMotion.SV_HEAD_R, RotLimit.of(-1.495996502,1.495996502));
     }
 
         

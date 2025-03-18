@@ -14,7 +14,16 @@ public class AS3_1 {
 	CRobotMem _sotaMem = new CRobotMem();
 	CSotaMotion _sotaMotion = new CSotaMotion(_sotaMem);
 
-	private static final Byte[] SERVO_IDS={CSotaMotion.SV_BODY_Y,CSotaMotion.SV_L_SHOULDER,CSotaMotion.SV_L_ELBOW,CSotaMotion.SV_R_SHOULDER,CSotaMotion.SV_R_ELBOW,CSotaMotion.SV_HEAD_Y,CSotaMotion.SV_HEAD_P,CSotaMotion.SV_HEAD_R};
+	private static final Byte[] SERVO_IDS={
+			CSotaMotion.SV_BODY_Y,
+			CSotaMotion.SV_L_SHOULDER,
+			CSotaMotion.SV_L_ELBOW,
+			CSotaMotion.SV_R_SHOULDER,
+			CSotaMotion.SV_R_ELBOW,
+			CSotaMotion.SV_HEAD_Y,
+			CSotaMotion.SV_HEAD_P,
+			CSotaMotion.SV_HEAD_R
+	};
 	ServoRangeTool _servoRangeTool;
 
 	AS3_1() {
