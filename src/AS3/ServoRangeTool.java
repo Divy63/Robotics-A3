@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 import jp.vstone.RobotLib.CRobotPose;
@@ -44,7 +45,7 @@ public class ServoRangeTool implements Serializable {
             _midpos[i] = 0;
         }
 
-        RotationLimits = Collections.emptyMap();
+        RotationLimits = new TreeMap<>();
         RotationLimits.put(CSotaMotion.SV_BODY_Y,RotLimit.of(-1.077363736, 1.077363736));
         RotationLimits.put(CSotaMotion.SV_L_SHOULDER, RotLimit.of(-2.617993878,1.745329252));
         RotationLimits.put(CSotaMotion.SV_L_ELBOW, RotLimit.of(-1.745329252,1.221730476));
@@ -97,29 +98,46 @@ public class ServoRangeTool implements Serializable {
     ///====================
     public RealVector calcAngles(CRobotPose pose) { // convert pose in motor positions to radians
         Short[] pos=pose.getServoAngles(_servoIDs);
-        
-        return null; // TODO
+        RealVector angles=new ArrayRealVector(pos.length);
+        for(int i=0;i<pos.length;i++){
+            angles.setEntry(i, posToRad((byte)(i - 1), pos[i]));
+        }
+        return angles; 
     }
 
     public CRobotPose calcMotorValues(RealVector angles) { // convert pose in angles to motor positions
-        return null; // TODO
+        CRobotPose pose=new CRobotPose();
+        Short[] pos = new Short[_servoIDs.length];
+        for(int i=0;i<pos.length;i++){
+            pos[i] = radToPos(_servoIDs[i], angles.getEntry(i));
+        }
+        pose.SetPose(AS3.SERVO_IDS,pos);
+        return pose;
     }
 
     private double posToRad(Byte servoID, Short pos) { // convert motor position to angle, in radians 
-        return 0; // TODO
+        RotLimit rotLimit = RotationLimits.get(servoID);
+        Short[] posLimit = getPosArray(servoID);
+        return rotLimit.minRad() + (pos - posLimit[0]) * (rotLimit.maxRad() - rotLimit.minRad())/(posLimit[2] - posLimit[0]);
     }
 
     private short radToPos(Byte servoID, double angle) { // convert angles, in radians, to motor position
-        return 0; // TODO
+        RotLimit rotLimit = RotationLimits.get(servoID);
+        Short[] posLimit = getPosArray(servoID);
+        return (short)(posLimit[0] + (angle - rotLimit.minRad()) * (posLimit[2] - posLimit[0])/(rotLimit.maxRad() - rotLimit.minRad()));
+    }
+    
+    private Short[] getPosArray(Byte servoID) {
+        int idx = _IDtoIndex.get(servoID);
+        return new Short[]{_minpos[idx], _midpos[idx], _maxpos[idx]};
     }
     
 	///==================== Pretty Print
     /// ///====================
 	private String formattedLine(String title, Byte servoID, Short[] minpos, Short[] maxpos, Short[] middle, Short[] pos) {
-		// int i = 0;
         int i = _IDtoIndex.get(servoID);
         double rad = 0;
-        // if (pos != null) rad = posToRad(servoID, pos[i]);
+        if (pos != null) rad = posToRad(servoID, pos[i]);
 		String format = "%14s %8d %8d %8d    %.2f rad";
 		return String.format(format, title, minpos[i], middle[i], maxpos[i], rad);
 	}

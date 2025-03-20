@@ -4,8 +4,8 @@
 // import org.apache.commons.math3.linear.MatrixUtils;
 // import org.apache.commons.math3.linear.RealVector;
 
-// import AS3.Frames.FrameKeys;
-// import AS3.SotaInverseK.JType;
+// import AS3.AS3.Frames.FrameKeys;
+// import AS3.AS3.SotaInverseK.JType;
 // import jp.vstone.RobotLib.*;
 
 // public class AS3_5 {
