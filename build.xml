@@ -6,7 +6,7 @@
 
         <!--ip -->
         <!--- CONFIGURE THIS for your Sota -->
-        <property name="scp.server" value="10.127.50.140"/>  
+        <property name="scp.server" value="192.168.1.201"/>  
         <!-- <property name="scp.server" value="10.127.48.104"/>    -->
          
         <!--scp credentials -->
@@ -95,13 +95,17 @@
                 </antcall>
 
                 <antcall target="__make_jar">
-                        <param name="jar.class" value="AS3_1" />
+                        <param name="jar.class" value="AS3.AS3_1" />
                         <param name="jar.name" value="AS3_1.jar" />
                 </antcall>
 
                 <antcall target="__make_jar">
-                        <param name="jar.class" value="AS3_2" />
+                        <param name="jar.class" value="AS3.AS3_2" />
                         <param name="jar.name" value="AS3_2.jar"/>
+                </antcall>
+                <antcall target="__make_jar">
+                        <param name="jar.class" value="AS3.AS3_3" />
+                        <param name="jar.name" value="AS3_3.jar"/>
                 </antcall>
 
 
