@@ -9,7 +9,9 @@ public class AS3_3 extends AS3 {
     public void readPosLoop() {
         _sotaMotion.ServoOff();
         CRobotUtil.Log(TAG, "Tracking motor positions. Press power button to stop.");
+        System.out.print("\033[H\033[2J"); System.out.flush();
         while(!_sotaMotion.isButton_Power()) {
+            System.out.print("\033[H"); // move cursor to top left before redrawing
 
             Short[] pos = _sotaMotion.getReadpos();
 
@@ -25,7 +27,7 @@ public class AS3_3 extends AS3 {
             CRobotUtil.Log(TAG, "R Shoulder: "+pose.getServoAngle(CSotaMotion.SV_R_SHOULDER)+"          ");
             
             _servoRangeTool.printMotorRanges(pos);
-            MatrixHelp.printVector("angles",_servoRangeTool.calcAngles(pose));
+            //MatrixHelp.printVector("angles",_servoRangeTool.calcAngles(pose));
             
 
             System.out.flush();  // force stdout flush before waiting to avoid tearing / flicker.
@@ -40,9 +42,9 @@ public class AS3_3 extends AS3 {
         if(!sota.connect())
             return;
         CRobotUtil.Log(TAG, "Startup Successful");
-        sota._servoRangeTool=new ServoRangeTool(SERVO_IDS);
+        sota._servoRangeTool=ServoRangeTool.Load();
         
-        
+        sota.readPosLoop();
 
         CRobotUtil.Log(TAG, "Program End Reached");
     }
