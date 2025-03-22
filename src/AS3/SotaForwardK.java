@@ -23,20 +23,27 @@ public class SotaForwardK {
                 MatrixHelp.rotZ(angles.getEntry(Motors.get(CSotaMotion.SV_BODY_Y))),
                 0,0,0.005);
         RealMatrix BodyHeadY = MatrixHelp.T(
-                MatrixHelp.rotZ(Motors.get(CSotaMotion.SV_HEAD_Y)),
+                MatrixHelp.rotZ(angles.getEntry(Motors.get(CSotaMotion.SV_HEAD_Y))),
                 0,0,0.19
         );
-        RealMatrix HeadP=MatrixHelp.T(
-                MatrixHelp.rotX(Motors.get(CSotaMotion.SV_HEAD_P)),
+        RealMatrix HeadYP=MatrixHelp.T(
+                MatrixHelp.rotX(angles.getEntry(Motors.get(CSotaMotion.SV_HEAD_P))),
                 0,0,0
         );
-        RealMatrix HeadR = MatrixHelp.T(
-                MatrixHelp.rotY(Motors.get(CSotaMotion.SV_HEAD_R)),
+        RealMatrix HeadPR = MatrixHelp.T(
+                MatrixHelp.rotY(angles.getEntry(Motors.get(CSotaMotion.SV_HEAD_R))),
                 0,0,0
         );
         
+        MatrixHelp.printMatrix("BaseBody", BaseBody, 1,3);
+        MatrixHelp.printMatrix("BodyHeadY", BodyHeadY, 1,3);
+        
         //# Head
-        frames.put(FrameKeys.HEAD, BaseBody); //todo
+        RealMatrix BaseY = BodyHeadY.multiply(BaseBody);
+        RealMatrix BaseP = BaseY.multiply(HeadYP);
+        RealMatrix BaseR = BaseP.multiply(HeadPR);
+        
+        frames.put(FrameKeys.HEAD, BaseR); //todo
         
     }
 }
