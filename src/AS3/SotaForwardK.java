@@ -10,6 +10,9 @@ import AS3.Frames.FrameKeys;
 public class SotaForwardK {
 
     public final Map<FrameKeys, RealMatrix> frames = new HashMap<>();
+    private static final double[] ELBOW_AXIS_LEFT = {0.6258053, 0.329192519, 0.707106769};
+    private static final double[] ELBOW_AXIS_RIGHT = {-0.6258053, 0.329192519, 0.707106769};
+    private static final double ARM_LENGTH = 0.047;
 
     public RealVector endEffectorState = null; // a single vector representing the combined state of the end effector. needs to be in the same order as in the IK
 
@@ -35,15 +38,54 @@ public class SotaForwardK {
                 0,0,0
         );
         
-        MatrixHelp.printMatrix("BaseBody", BaseBody, 1,3);
-        MatrixHelp.printMatrix("BodyHeadY", BodyHeadY, 1,3);
+        RealMatrix BodyShouldLeft = MatrixHelp.T(
+                MatrixHelp.rotX(-angles.getEntry(Motors.get(CSotaMotion.SV_L_SHOULDER))),
+                0.039,0,0.1415
+        );
+        RealMatrix BodyShouldRight = MatrixHelp.T(
+                MatrixHelp.rotX(angles.getEntry(Motors.get(CSotaMotion.SV_R_SHOULDER))),
+                -0.039,0,0.1415
+        );
+
+        RealMatrix ShouldElbowLeft = MatrixHelp.T(
+                MatrixHelp.rotRodrigues(ELBOW_AXIS_LEFT[0],ELBOW_AXIS_LEFT[1],ELBOW_AXIS_LEFT[2],
+                        angles.getEntry(Motors.get(CSotaMotion.SV_L_ELBOW))),
+                0.0225,-0.03897,0
+        );
+        RealMatrix ShouldElbowRight = MatrixHelp.T(
+                MatrixHelp.rotRodrigues(ELBOW_AXIS_RIGHT[0],ELBOW_AXIS_RIGHT[1],ELBOW_AXIS_RIGHT[2],
+                        angles.getEntry(Motors.get(CSotaMotion.SV_R_ELBOW))),
+                -0.0225,-0.03897,0
+        );
+        
+        
+        
+        RealMatrix ElbowHandLeft = MatrixHelp.T(
+                MatrixUtils.createRealIdentityMatrix(4),
+                0.0225,-0.03897,0//todo this should take this direction then normalize it and multiply by length
+        );
         
         //# Head
         RealMatrix BaseY = BodyHeadY.multiply(BaseBody);
         RealMatrix BaseP = BaseY.multiply(HeadYP);
         RealMatrix BaseR = BaseP.multiply(HeadPR);
         
-        frames.put(FrameKeys.HEAD, BaseR); //todo
+        // # Hand Left
+        RealMatrix BaseShouldL = BaseBody.multiply(BodyShouldLeft);
+        RealMatrix BaseElbowL = BaseShouldL.multiply(ShouldElbowLeft);
+        RealMatrix BaseHandL = BaseElbowL.multiply(ElbowHandLeft);
+        
+        // # Hand Right
+        //todo
+        RealMatrix BaseShouldR = BaseBody.multiply(BodyShouldRight);
+        RealMatrix BaseElbowR = BaseShouldR.multiply(ShouldElbowRight);
+        
+        
+        
+        
+        frames.put(FrameKeys.HEAD, BaseR); 
+        frames.put(FrameKeys.L_HAND, BaseHandL);
+        frames.put(FrameKeys.R_HAND, BaseElbowR);//todo
         
     }
 }
