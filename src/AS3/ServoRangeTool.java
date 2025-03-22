@@ -100,7 +100,7 @@ public class ServoRangeTool implements Serializable {
         Short[] pos=pose.getServoAngles(_servoIDs);
         RealVector angles=new ArrayRealVector(pos.length);
         for(int i=0;i<pos.length;i++){
-            angles.setEntry(i, posToRad((byte)(i - 1), pos[i]));
+            angles.setEntry(i, posToRad(_servoIDs[i], pos[i]));
         }
         return angles; 
     }
