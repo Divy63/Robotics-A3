@@ -14,7 +14,7 @@ public class MatrixHelp {  // creates homogeneous rotation matrices
                 {0,Math.sin(theta), Math.cos(theta),0},
                 {0,0,0,1}
         };
-        return new Array2DRowRealMatrix(mat);
+        return MatrixUtils.createRealMatrix(mat);
     }
 
     public static RealMatrix rotY(double theta) { // returns a homogenous rotation matrix around the Y axis
@@ -24,7 +24,7 @@ public class MatrixHelp {  // creates homogeneous rotation matrices
                 {Math.sin(theta),0,Math.cos(theta),0},
                 {0,0,0,1}
         };
-        return new Array2DRowRealMatrix(mat);
+        return MatrixUtils.createRealMatrix(mat);
     }
 
     public static RealMatrix rotZ(double theta) { // returns a homogenous rotation matrix around the Z axis
@@ -34,7 +34,7 @@ public class MatrixHelp {  // creates homogeneous rotation matrices
                 {0,0,1,0},
                 {0,0,0,1}
         };
-        return new Array2DRowRealMatrix(mat);
+        return MatrixUtils.createRealMatrix(mat);
     }
 
     // a 4 translation vector. assume w/normalized.
@@ -46,11 +46,11 @@ public class MatrixHelp {  // creates homogeneous rotation matrices
                 {0,0,1,tz},
                 {0,0,0,1}
         };
-        return new Array2DRowRealMatrix(mat);
+        return MatrixUtils.createRealMatrix(mat);
     }
 
     public static RealMatrix T(RealMatrix R, double tx, double ty, double tz) { // constructs a Rt matrix
-        RealMatrix inner = R.getSubMatrix(0,0,2,2);
+        RealMatrix inner = R.getSubMatrix(0,2,0,2);
         RealMatrix trans = trans(tx,ty,tz);
         trans.setSubMatrix(inner.getData(),0,0); 
         return trans;
