@@ -58,12 +58,24 @@ public class SotaForwardK {
                 -0.0225,-0.03897,0
         );
         
-        
+        //! this is horribly inefficient
+        RealVector handOffsetL = new ArrayRealVector(new double[]{0.0225,-0.03897,0});
+        RealVector handOffsetR = new ArrayRealVector(new double[]{-0.0225,-0.03897,0});
+        handOffsetL.unitize();
+        handOffsetR.unitize();
+        handOffsetL = handOffsetL.mapMultiply(ARM_LENGTH);
+        handOffsetR = handOffsetR.mapMultiply(ARM_LENGTH);
         
         RealMatrix ElbowHandLeft = MatrixHelp.T(
                 MatrixUtils.createRealIdentityMatrix(4),
-                0.0225,-0.03897,0//todo this should take this direction then normalize it and multiply by length
+                handOffsetL.getEntry(0),handOffsetL.getEntry(1),handOffsetL.getEntry(2)
         );
+        RealMatrix ElbowHandRight = MatrixHelp.T(
+                MatrixUtils.createRealIdentityMatrix(4),
+                handOffsetR.getEntry(0),handOffsetR.getEntry(1),handOffsetR.getEntry(2)
+        );
+        
+       
         
         //# Head
         RealMatrix BaseY = BodyHeadY.multiply(BaseBody);
@@ -76,16 +88,14 @@ public class SotaForwardK {
         RealMatrix BaseHandL = BaseElbowL.multiply(ElbowHandLeft);
         
         // # Hand Right
-        //todo
         RealMatrix BaseShouldR = BaseBody.multiply(BodyShouldRight);
         RealMatrix BaseElbowR = BaseShouldR.multiply(ShouldElbowRight);
+        RealMatrix BaseHandR = BaseElbowR.multiply(ElbowHandRight);
         
-        
-        
-        
+        // # Set Output
         frames.put(FrameKeys.HEAD, BaseR); 
         frames.put(FrameKeys.L_HAND, BaseHandL);
-        frames.put(FrameKeys.R_HAND, BaseElbowR);//todo
+        frames.put(FrameKeys.R_HAND, BaseHandR);
         
     }
 }
