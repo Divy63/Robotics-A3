@@ -7,8 +7,8 @@ import AS3.Frames.FrameKeys;
 
 public class SotaInverseK {
 
-    private static double NUMERICAL_DELTA_rad = 1e-10;
-    private static double DISTANCE_THRESH = 1e-3; // 1mm
+    public static double NUMERICAL_DELTA_rad = 1e-10;
+    public static double DISTANCE_THRESH = 1e-3; // 1mm
 
     enum JType {  // We separate the jacobians into origin and rotation components to simplify the problem
         O, // origin
@@ -34,7 +34,10 @@ public class SotaInverseK {
     // Makes both the jacobian and inverse from the current configuration for the
     // given frame type. Creates both JTypes.
     private void makeJacobian(RealVector currentAngles, FrameKeys frameType) {
-        // TODO
+        RealMatrix jacobian = JacobianMaker.getInstance().makeJacobian(currentAngles, frameType);
+        J[JType.O.ordinal()].put(frameType, jacobian);
+        Jinv[JType.O.ordinal()].put(frameType, MatrixHelp.pseudoInverse(jacobian));
+        
     }
     
     // calculates the target absolute pose from the current pose, plus the given delta
